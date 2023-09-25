@@ -12,15 +12,16 @@ import java.util.Map;
 public class LoginRequest extends StringRequest {
 
     // 서버 URL 설정
-    final static private String URL = "";
+    final static private String URL = "http://localhost:3000/auth/signin";
     private Map<String, String> map;
 
     public LoginRequest(String userID, String userPassword, Response.Listener<String> listener) {
         super(Method.POST, URL, listener, null);
 
         map = new HashMap<>();
-        map.put("userID", userID);
-        map.put("userPassword", userPassword);
+        map.put("username", userID);
+        map.put("password", userPassword);
+
     };
 
     @Nullable
