@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RegisterLoginExample.iml" filepath="$PROJECT_DIR$/.idea/modules/RegisterLoginExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RegisterLoginExample.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>
