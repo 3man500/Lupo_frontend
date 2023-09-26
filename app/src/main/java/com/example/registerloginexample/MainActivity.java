@@ -8,20 +8,21 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tv_id, tv_pass;
+    // 서버에서 받는 response 인 messege와 access_token을 loginactivity에서 가지고 온다.
+    private TextView res_message, res_access_token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tv_id = findViewById(R.id.tv_id);
-        tv_pass = findViewById(R.id.tv_password);
+        res_message = findViewById(R.id.res_message);
+        res_access_token = findViewById(R.id.res_access_token);
 
         Intent intent = getIntent();
-        String userID = intent.getStringExtra("userID");
-        String userPass = intent.getStringExtra("userPass");
+        String message = intent.getStringExtra("message");
+        String access_token = intent.getStringExtra("access_token");
 
-        tv_id.setText(userID);
-        tv_pass.setText(userPass);
+        res_message.setText(message);
+        res_access_token.setText(access_token);
     }
 }

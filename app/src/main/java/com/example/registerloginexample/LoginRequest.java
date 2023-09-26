@@ -19,6 +19,7 @@ public class LoginRequest extends StringRequest {
         super(Method.POST, URL, listener, null);
 
         map = new HashMap<>();
+        // 현재 서버에서 userID를 username으로 설정, userPassword를 password로 설정
         map.put("username", userID);
         map.put("password", userPassword);
 

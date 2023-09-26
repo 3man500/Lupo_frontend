@@ -57,38 +57,9 @@ public class RegisterActivity extends AppCompatActivity {
                 String userName = et_name.getText().toString();
                 int userAge = Integer.parseInt(et_age.getText().toString());
                 Log.v("테스트", "1");
+                //sendloginRequest로 서버에 userPass와 userID를 보낸다. 이때 userID는 서버의 username과 같다. 순서 바꾸면 안된다.
+                // 나중에 서버의 username을 userid로 고칠 예정
                 sendRequest(userID, userPass, userName, userAge);
-
-                // 해당 데이터를 운반하기 위한 것
-                Response.Listener<String> responseListener = new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.v("응답", response);
-                            JSONObject jsonObject = new JSONObject(response);
-                            // php 서버에서 선언한 success 구문.. 백엔드랑 연동할 때 수정할 수도 있다.
-                            // 서버 통신이 잘됐는지에 대한 여부
-                            boolean success = jsonObject.getBoolean("success");
-                            Log.v("응답", response);
-                            // 회원 등록에 성공한 경우
-                            if (success) {
-                                Toast.makeText(getApplicationContext(), "Lupo 일원이 된 것을 환영합니다", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                            } else { // 회원 등록에 실패한 경우
-                                Toast.makeText(getApplicationContext(), "회원 등록에 실패하였습니다", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                };
-                // 서버를 Volley를 이용해서 요청을 한다.
-                RegisterRequest registerRequest = new RegisterRequest(userID, userPass, userName, userAge, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
-                queue.add(registerRequest);
             }
         });
     }
