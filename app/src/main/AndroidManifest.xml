@@ -2,11 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 인터넷 권한 선언-->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 인터넷 권한 선언 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+<!--    GPS 권한 선언-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!--    자세한 위치 선언-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION">
 
+    </uses-permission>
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,8 +20,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RegisterLoginExample"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <!-- 로그인 activity가 가장 먼저 실행되어야 하기 때문에 main과 launcher intent filter를 login-activity로-->
+
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
+
+<!--        구글 지도 API 값-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBKPE2Zffy7X_WKGc8vsTH8yHjj5CvooXM" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
+
+        <!-- 로그인 activity가 가장 먼저 실행되어야 하기 때문에 main과 launcher intent filter를 login-activity로 -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -31,9 +60,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
     </application>
 
 </manifest>
