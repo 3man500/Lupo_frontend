@@ -105,7 +105,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng mylocation = new LatLng(cur_lat,cul_lon);
         // 반경 1KM원
         CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
-                .radius(5gi000)      //반지름 단위 : m
+                .radius(5000)      //반지름 단위 : m
                 .strokeWidth(0f)  //선너비 0f : 선없음
                 .fillColor(Color.parseColor("#880000ff")); //배경색
         mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
