@@ -275,8 +275,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(@NonNull Location location) {
                 Log.i("MyLocation", "위도" + location.getLatitude());
                 Log.i("MyLocation", "경도" + location.getLongitude());
-                sendUpdateLocationRequest(Double.toString(location.getLongitude()), Double.toString(location.getLatitude()));
-
+                double latitude = location.getLatitude();
+                String updown_latitude = String.format("%.5f", latitude);
+                // sendUpdateLocationRequest(Double.toString(location.getLongitude()), Double.toString(location.getLatitude()));
+                sendUpdateLocationRequest(updown_latitude, Double.toString(location.getLongitude()));
 
             }
         };
@@ -323,8 +325,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    public void sendUpdateLocationRequest(String longitude, String latitude) {
+    public void sendUpdateLocationRequest(String latitude, String longitude) {
         String url = "http://10.0.2.2:3000/auth/location";
+        Log.i("latitude", latitude);
+        Log.i("longitude", longitude);
         StringRequest request = new StringRequest(
                 Request.Method.PATCH,
                 url,
@@ -334,16 +338,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         JSONObject jsonObject = null;
                         try {
                             jsonObject = new JSONObject(response);
-//                            // 서버 key값으로 messege, access_token을 받는다
-//                            String message = jsonObject.getString("message");
-//                            String access_token = jsonObject.getString("access_token");
-//
-//                            Toast.makeText(getApplicationContext(), "보금자리에 온 것을 환영합니다", Toast.LENGTH_SHORT).show();
-//                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                            // data를 담아주는 곳
-//                            intent.putExtra("message", message);
-//                            intent.putExtra("access_token", access_token);
-//                            startActivity(intent);
                             Log.i("update location",jsonObject.toString());
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
@@ -360,14 +354,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("lat", latitude);
-                params.put("lon", longitude);
+//            @Override
+//            public Map<String, String> getParams() throws AuthFailureError {
+//                Map params = new HashMap();
+//                // Map<String,String> params = new HashMap<String,String>();
+//                params.put("lat", latitude + "");
+//                params.put("lon", longitude + "");
+//                return params;
+//            }
+
+            public Map<String, String> getLat() throws AuthFailureError {
+                Map param_lat = new HashMap();
+                // Map<String,String> params = new HashMap<String,String>();
+                param_lat.put("lat", latitude + "");
+                return param_lat;
+            }
 
 
-                return params;
+//            @Override
+//            public Map<String, String> getParams() throws AuthFailureError {
+//                Map params = new HashMap();
+//                // Map<String,String> params = new HashMap<String,String>();
+//                params.put("lat", latitude + "");
+//                params.put("lon", longitude + "");
+//                return params;
+//            }
+
+            public Map<String, String> getLon() throws AuthFailureError {
+                Map param_lon = new HashMap();
+                // Map<String,String> params = new HashMap<String,String>();
+                param_lon.put("lon", longitude + "");
+                return param_lon;
             }
 
             @Override
