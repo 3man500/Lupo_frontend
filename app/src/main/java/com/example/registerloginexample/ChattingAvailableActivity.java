@@ -21,7 +21,7 @@ public class ChattingAvailableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting_available);
-
+        Log.v("테스트", "1");
         //여기까지 함
         Button btn_open_chatting_people_3 = (Button) findViewById(R.id.btn_open_chatting_people_3);
 
@@ -66,6 +66,7 @@ public class ChattingAvailableActivity extends AppCompatActivity {
                 }
 
                 // Call the instance method of the result object in the openChannel parameter of the onResult() callback method.
+                // 에러가 뜨는 곳 70번째 줄
                 openChannel.enter(new OpenChannel.OpenChannelEnterHandler() {
                     @Override
                     public void onResult(SendBirdException e) {
