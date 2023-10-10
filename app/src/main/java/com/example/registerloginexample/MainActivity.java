@@ -35,6 +35,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -274,6 +275,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(@NonNull Location location) {
                 Log.i("MyLocation", "위도" + location.getLatitude());
                 Log.i("MyLocation", "경도" + location.getLongitude());
+                sendUpdateLocationRequest(Double.toString(location.getLongitude()), Double.toString(location.getLatitude()));
 
 
             }
@@ -352,7 +354,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), "로그인에 실패하였습니다", Toast.LENGTH_SHORT).show();
+                        VolleyLog.v("testa", error);
+                        Toast.makeText(getApplicationContext(), "위치 정보 업데이트에 실패하였습니다", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -362,7 +365,31 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Map<String,String> params = new HashMap<String,String>();
                 params.put("lat", latitude);
                 params.put("lon", longitude);
+
+
                 return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                SharedPreferences preferences = getSharedPreferences("myPref", MODE_PRIVATE);
+                String accessToken = preferences.getString("access_token", "dd");
+
+                Map headers = new HashMap();
+                headers.put("Content-Type", "application/json");
+                headers.put("Cookie", "access_token=" + accessToken );
+//                Map<String,String> headers = new HashMap<String, String>();
+//                headers.put("Accept","application/json");
+//
+//
+//                if(!MyApplication.getCookie(context).equals("")){
+//                    String cookie = MyApplication.getCookie(context);
+//                    Show.m("Cookie to load from preferences: " + cookie);
+//                    headers.put("Cookie", cookie);
+//                }
+
+                return headers;
             }
         };
         request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
