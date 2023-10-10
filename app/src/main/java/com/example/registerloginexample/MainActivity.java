@@ -89,9 +89,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 LatLng mylocation = new LatLng(cur_lat,cul_lon);
+                //    마커로 위치 표시
                 // 반경 1KM원
                 CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
-                        .radius(200000)      //반지름 단위 : m
+                        .radius(2000)      //반지름 단위 : m
                         .strokeWidth(0f)  //선너비 0f : 선없음
                         .fillColor(Color.parseColor("#880000ff")); //배경색
                 mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
@@ -151,14 +152,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-//    마커로 위치 표시
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-
-
-        this.mMap.addCircle(circle1KM);
     }
 }
 
