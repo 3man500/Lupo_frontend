@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- 인터넷 권한 선언-->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 인터넷 권한 선언 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,8 +13,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RegisterLoginExample"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <!-- 로그인 activity가 가장 먼저 실행되어야 하기 때문에 main과 launcher intent filter를 login-activity로-->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity android:name=".ChattingActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ChattingAvailableActivity"
+            android:exported="false" />
+        <!-- 로그인 activity가 가장 먼저 실행되어야 하기 때문에 main과 launcher intent filter를 login-activity로 -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -31,9 +38,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

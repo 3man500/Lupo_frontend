@@ -28,14 +28,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="#000000"
+        android:background="#A8E4D4"
         android:orientation="vertical">
-        
-        <TextView
+
+        <Button
+            android:id="@+id/btn_open_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="나의 프로필"/>
+            android:text="나의 프로필" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#A8E4D4"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_open_can_talk_people"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="나의 이웃과 대화하기" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#A8E4D4"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/setting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="설정" />
+    </LinearLayout>
+    <!-- include 메소드는 말그대로 해당 창에 다른 xml창도 같이 띄우는 것으로, 다른 페이지로 넘어갈 것이면 쓰면 안되는 함수이다.-->
+    <!--    &lt;!&ndash; 채팅가능한 구성원 보는 창&ndash;&gt;-->
+    <!--    <include layout = "@layout/activity_chatting"/>-->
+    <!--    &lt;!&ndash; 프로필을 볼 수 있는 창&ndash;&gt;-->
+    <!--    <include layout = "@layout/activity_profile"/>-->
 
 </LinearLayout>
