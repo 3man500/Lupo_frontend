@@ -20,12 +20,18 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,10 +42,19 @@ import com.example.registerloginexample.databinding.ActivityMapsBinding;
 
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+    private Button btn_open, btn_open2;
+    SupportMapFragment mapFragment;
+    Marker myMarker;
+    MarkerOptions myLocationMarker;
+    Circle circle;
+    CircleOptions circle1KM;
+    LocationManager manager;
 
-    LocationManager locationManager;
+
+    
+
+
     LocationListener locationListener;
-    private double longitude, latitude;
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private double cur_lat;
@@ -49,36 +64,76 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btn_open = findViewById(R.id.btn_open);
+        btn_open2 = findViewById(R.id.btn_open2);
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        try {
+            MapsInitializer.initialize(this);
+        } catch (Exception e) {
+        }
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                mMap = googleMap;
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                    return;
+                }
+
+
+                LatLng mylocation = new LatLng(cur_lat,cul_lon);
+                // 반경 1KM원
+                CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
+                        .radius(200000)      //반지름 단위 : m
+                        .strokeWidth(0f)  //선너비 0f : 선없음
+                        .fillColor(Color.parseColor("#880000ff")); //배경색
+                mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(mylocation));
+                //원추가
+                mMap.addCircle(circle1KM);
+                mMap.setMyLocationEnabled(true);
+            }
+        });
+        mapFragment.getView().setVisibility(View.VISIBLE);
+
+
+
 
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
             return;
         }
 
         Location loc_Current =
                 locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if (loc_Current != null){
-        cur_lat = loc_Current.getLatitude(); //위도
-        cul_lon = loc_Current.getLongitude(); //경도
+        if (loc_Current != null) {
+            cur_lat = loc_Current.getLatitude(); //위도
+            cul_lon = loc_Current.getLongitude(); //경도
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                3000, -1, locationListener); // 3초 마다 위치 갱신
-}
-//        지도 표시
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        }
+        
     }
+
+
+
+
+
+
 
 //    위치 권한 설정
     @Override
@@ -102,15 +157,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
 
-        LatLng mylocation = new LatLng(cur_lat,cul_lon);
-        // 반경 1KM원
-        CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
-                .radius(5000)      //반지름 단위 : m
-                .strokeWidth(0f)  //선너비 0f : 선없음
-                .fillColor(Color.parseColor("#880000ff")); //배경색
-        mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mylocation));
-        //원추가
+
         this.mMap.addCircle(circle1KM);
     }
 }

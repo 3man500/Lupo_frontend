@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <!--    자세한 위치 선언-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<!--    네트워크 환경 권한-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<!--    백그라운드 위치-->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION">
 
     </uses-permission>
