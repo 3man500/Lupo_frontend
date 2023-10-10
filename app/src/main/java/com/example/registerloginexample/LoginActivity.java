@@ -4,8 +4,11 @@ import static java.sql.DriverManager.println;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText et_login_id, et_login_password;
     private Button btn_login, btn_login_register;
 
-
+    private Context context;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        context = getApplicationContext();
+
     }
 
     public void sendloginRequest(String userID, String userPassword) {
@@ -82,6 +88,14 @@ public class LoginActivity extends AppCompatActivity {
                             // data를 담아주는 곳
                             intent.putExtra("message", message);
                             intent.putExtra("access_token", access_token);
+                            //Editor를 preferences에 쓰겠다고 연결
+
+                            sharedPreferences = context.getSharedPreferences("myPref", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("access_token", access_token);
+                            editor.apply();
+                            //메소드 호출
+                            getPreferences(context);
                             startActivity(intent);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
@@ -111,5 +125,8 @@ public class LoginActivity extends AppCompatActivity {
         println("요청 보냄.");
 
     }
+
+    public static SharedPreferences getPreferences(Context context){
+        return context.getSharedPreferences("access_token", Context.MODE_PRIVATE);    }
 
 }

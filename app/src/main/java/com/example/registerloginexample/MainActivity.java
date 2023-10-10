@@ -1,21 +1,21 @@
 package com.example.registerloginexample;
 
+
 import static java.sql.DriverManager.println;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,6 +28,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -36,6 +37,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,8 +52,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
 import com.sendbird.android.handlers.InitResultHandler;
-
-
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
@@ -65,6 +65,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,31 +73,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 // , AppCompatActivity
+
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     private Button btn_open, btn_open2;
+    private TextView tv_id, tv_pass;
+    private DrawerLayout drawerLayout;
+    private View drawerView;
+    // View: UI 요소를 참조하거나 조작할 수 있게 함
+    private View chattingView;
+    private View profileView;
     SupportMapFragment mapFragment;
     Marker myMarker;
     MarkerOptions myLocationMarker;
     Circle circle;
     CircleOptions circle1KM;
     LocationManager manager;
-
-
-    
-
-
     LocationListener locationListener;
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private double cur_lat;
     private double cul_lon;
 
-
+    // 서버에서 받은 response 인 messege와 access_token을 loginactivity에서 가지고 온다.
+    // private TextView res_message, res_access_token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
 
         // chat SDK 초기화
         // 다음 단계 부터는 모두 비동기이므로 handler가 필요하다. 안그러면 무한 콜백 지옥에 빠진다.
@@ -165,6 +168,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 // 네비게이션 메뉴가 열리는 코드
                 drawerLayout.openDrawer(drawerView);
+                LoginActivity loginActivity = new LoginActivity();
+
             }
         });
 
@@ -186,7 +191,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 아래는 login activity에서 token 값과 messege를 얻기 위해 필요한 코드들 (지우지 말기)
         Intent intent = getIntent();
-
 
         // 서버의 response인 messege와 access_token을 저장하는 변수값 생성
         String message = intent.getStringExtra("message");
@@ -222,8 +226,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         };
-
-
         btn_open = findViewById(R.id.btn_open);
         btn_open2 = findViewById(R.id.btn_open2);
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -261,16 +263,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.addCircle(circle1KM);
                     mMap.setMyLocationEnabled(true);
                 }
-
-
             });
             mapFragment.getView().setVisibility(View.VISIBLE);
-
-
-
-
-
-
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -303,16 +297,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,3000,-1,locationListener);
 
     }
-
-
-
-
-
-
-
-
-
-
 //    위치 권한 설정
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -327,27 +311,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
     }
 
-    private TextView tv_id, tv_pass;
-
-    private DrawerLayout drawerLayout;
-    private View drawerView;
-
-    // View: UI 요소를 참조하거나 조작할 수 있게 함
-    private View chattingView;
-
-    private View profileView;
-
     // 서버에서 받은 response 인 messege와 access_token을 loginactivity에서 가지고 온다.
     // private TextView res_message, res_access_token;
-
 
 
 
