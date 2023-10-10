@@ -10,12 +10,31 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <Button
             android:id="@+id/btn_open"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="구성원을 확인해보세요"/>
+            android:baselineAligned="false"
+            android:text="구성원을 확인해보세요" />
+
+
+        <Button
+            android:id="@+id/btn_open2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:text="입력내용 " />
+
+        <fragment
+            android:id="@+id/mMap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="657dp" />
+
+
     </LinearLayout>
 
     <!-- activity drawer layout을 main xml에 포함을 시켜라-->
@@ -86,5 +105,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
     -->
+
+
+
+
 
 </androidx.drawerlayout.widget.DrawerLayout>
