@@ -1,5 +1,7 @@
 package com.example.registerloginexample;
 
+import static java.sql.DriverManager.println;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -26,7 +28,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +64,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 // , AppCompatActivity
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -236,11 +251,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     //    마커로 위치 표시
                     // 반경 1KM원
                     CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
-                            .radius(2000)      //반지름 단위 : m
+                            .radius(3000)      //반지름 단위 : m
                             .strokeWidth(0f)  //선너비 0f : 선없음
                             .fillColor(Color.parseColor("#880000ff")); //배경색
                     mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(mylocation));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 13));
+
                     //원추가
                     mMap.addCircle(circle1KM);
                     mMap.setMyLocationEnabled(true);
@@ -259,6 +275,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
 
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                Log.i("MyLocation", "위도" + location.getLatitude());
+                Log.i("MyLocation", "경도" + location.getLongitude());
+
+
+            }
+        };
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -275,6 +300,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             cul_lon = loc_Current.getLongitude(); //경도
 
         }
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,3000,-1,locationListener);
+
     }
 
 
@@ -323,6 +350,57 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
+
+    public void sendUpdateLocationRequest(String longitude, String latitude) {
+        String url = "http://10.0.2.2:3000/auth/location";
+        StringRequest request = new StringRequest(
+                Request.Method.PATCH,
+                url,
+                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                    @Override
+                    public void onResponse(String response) {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response);
+//                            // 서버 key값으로 messege, access_token을 받는다
+//                            String message = jsonObject.getString("message");
+//                            String access_token = jsonObject.getString("access_token");
+//
+//                            Toast.makeText(getApplicationContext(), "보금자리에 온 것을 환영합니다", Toast.LENGTH_SHORT).show();
+//                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                            // data를 담아주는 곳
+//                            intent.putExtra("message", message);
+//                            intent.putExtra("access_token", access_token);
+//                            startActivity(intent);
+                            Log.i("update location",jsonObject.toString());
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "로그인에 실패하였습니다", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String,String>();
+                params.put("lat", latitude);
+                params.put("lon", longitude);
+                return params;
+            }
+        };
+        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+        AppHelper.requestQueue.add(request);
+        println("요청 보냄.");
+
+    }
 
 }
 

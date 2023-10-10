@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
-            android:text="구성원을 확인해보세요" />
+            android:text="구성원을 확인해보세요." />
 
 
         <Button
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
-            android:text="입력내용 " />
+            android:text="슈퍼챗을 사용해보세요." />
 
         <fragment
             android:id="@+id/mMap"
