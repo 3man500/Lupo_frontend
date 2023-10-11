@@ -236,7 +236,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Exception e) {
         }
 
-            mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -270,6 +271,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+            return;
+        }
+
+
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
@@ -282,13 +293,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         };
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-            return;
-        }
 
         Location loc_Current =
                 locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -363,28 +368,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                return params;
 //            }
 
-            public Map<String, String> getLat() throws AuthFailureError {
-                Map param_lat = new HashMap();
-                // Map<String,String> params = new HashMap<String,String>();
-                param_lat.put("lat", latitude + "");
-                return param_lat;
-            }
-
-
-//            @Override
-//            public Map<String, String> getParams() throws AuthFailureError {
-//                Map params = new HashMap();
-//                // Map<String,String> params = new HashMap<String,String>();
-//                params.put("lat", latitude + "");
-//                params.put("lon", longitude + "");
-//                return params;
-//            }
-
-            public Map<String, String> getLon() throws AuthFailureError {
-                Map param_lon = new HashMap();
-                // Map<String,String> params = new HashMap<String,String>();
-                param_lon.put("lon", longitude + "");
-                return param_lon;
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                 Map<String,String> params = new HashMap<String,String>();
+                 params.put("lat", latitude);
+                 params.put("lon", longitude);
+                return params;
             }
 
             @Override
@@ -394,7 +383,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 String accessToken = preferences.getString("access_token", "dd");
 
                 Map headers = new HashMap();
-                headers.put("Content-Type", "application/json");
+                //headers.put("Content-Type", "application/json");
                 headers.put("Cookie", "access_token=" + accessToken );
 //                Map<String,String> headers = new HashMap<String, String>();
 //                headers.put("Accept","application/json");
