@@ -8,23 +8,27 @@
         android:id="@+id/button"
         android:layout_width="260dp"
         android:layout_height="68dp"
-        android:text="재난 슈퍼챗 게시판"
+        android:text="슈퍼챗 게시판"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="75dp"
-        tools:layout_editor_absoluteY="82dp" />
+        tools:layout_editor_absoluteY="16dp" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="260dp"
-        android:layout_height="68dp"
-        android:text="지역 슈퍼챗 게시판"
-        tools:layout_editor_absoluteX="75dp"
-        tools:layout_editor_absoluteY="344dp" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="349dp"
+        android:layout_height="513dp"
+        android:layout_weight="1"
+        tools:layout_editor_absoluteX="31dp"
+        tools:layout_editor_absoluteY="109dp"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="슈퍼챗 구입하기"
+        android:text="슈퍼챗 작성하기"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="617dp" />
+        tools:layout_editor_absoluteY="646dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

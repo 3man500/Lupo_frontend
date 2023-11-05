@@ -128,6 +128,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // drawer_layout의 id를 찾는 코드
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+
         // main.xml에 drawer.xml을 include했으므로 id를 main.java에서 찾을 수 있다.
         drawerView = (View) findViewById(R.id.drawer);
 
@@ -142,6 +143,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Button btn_open_can_talk_people = (Button) findViewById(R.id.btn_open_can_talk_people);
 
         Button btn_open = (Button) findViewById(R.id.btn_open);
+
+
 
         // 주변 사람이 누가 있는지 알려주는 xml을 여는 코드
         btn_open_can_talk_people.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +166,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(intent);
             }
         });
+
 
         btn_open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,6 +235,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         btn_open2 = findViewById(R.id.btn_open2);
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+
         try {
             MapsInitializer.initialize(this);
         } catch (Exception e) {
@@ -249,24 +254,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
                         return;
                     }
+                    LatLng curpoint = new LatLng(cur_lat, cul_lon);
 
-
-                    LatLng mylocation = new LatLng(cur_lat, cul_lon);
                     //    마커로 위치 표시
-                    // 반경 1KM원
-                    CircleOptions circle1KM = new CircleOptions().center(mylocation) //원점
-                            .radius(3000)      //반지름 단위 : m
-                            .strokeWidth(0f)  //선너비 0f : 선없음
-                            .fillColor(Color.parseColor("#880000ff")); //배경색
-                    mMap.addMarker(new MarkerOptions().position(mylocation).title("당신의 위치"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 13));
-
-                    //원추가
-                    mMap.addCircle(circle1KM);
+//                    showMyLocationMarker(curpoint);
+                    // 현재위치로 카메라 이동 및 확대
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curpoint, 13));
                     mMap.setMyLocationEnabled(true);
+                    circle1KM = new CircleOptions()
+                            .center(curpoint)
+                            .radius(3000)       // 반지름 단위 : m
+                            .strokeWidth(1.0f)
+                            .fillColor(Color.parseColor("#880000ff"));
+                    circle= mMap.addCircle(circle1KM);
+                    circle.setCenter(curpoint);
+
+
+
                 }
             });
-            mapFragment.getView().setVisibility(View.VISIBLE);
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -288,6 +294,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i("MyLocation", "경도" + location.getLongitude());
                 double latitude = location.getLatitude();
                 String updown_latitude = String.format("%.5f", latitude);
+
                 // sendUpdateLocationRequest(Double.toString(location.getLongitude()), Double.toString(location.getLatitude()));
                 sendUpdateLocationRequest(updown_latitude, Double.toString(location.getLongitude()));
 
@@ -303,10 +310,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             cul_lon = loc_Current.getLongitude(); //경도
 
         }
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,3000,-1,locationListener);
+
+        //1초마다 위치 갱신 , 10미터마다 위치 갱신
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,1000,10,locationListener);
 
     }
-//    위치 권한 설정
+
+
+//    private void showMyLocationMarker(LatLng curPoint) {
+//        if (myLocationMarker == null) {
+//            myLocationMarker = new MarkerOptions(); // 마커 객체 생성
+//            myLocationMarker.position(curPoint);
+//            myMarker = mMap.addMarker(myLocationMarker);
+//        } else {
+//            myMarker.remove(); // 마커삭제
+////            myLocationMarker.position(curPoint);
+////            myMarker = mMap.addMarker(myLocationMarker);
+//        }
+//
+//        // 반경추가
+//        if (circle1KM == null) {
+//            circle1KM = new CircleOptions()
+//                    .center(curPoint) // 원점
+//                    .radius(3000)       // 반지름 단위 : m
+//                    .strokeWidth(1.0f)   // 선너비 0f : 선없음
+//                    .fillColor(Color.parseColor("#880000ff")); // 배경색
+//            circle = mMap.addCircle(circle1KM);
+//
+//
+//        } else {
+//            circle.remove(); // 반경삭제
+////            circle1KM.center(curPoint);
+////            circle = mMap.addCircle(circle1KM);
+//        }
+//
+//
+//    }
+
+    //    위치 권한 설정
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

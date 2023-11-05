@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="설정">
+        <SwitchPreference
+            android:key="message"
+            android:title="메시지 알림"/>
+        <SwitchPreference
+            android:key="vibration "
+            android:title="진동 알림"/>
+        <SwitchPreference
+            android:key="sound"
+            android:title="소리"/>
+        <PreferenceScreen
+            android:key="profile"
+            android:title="나의 프로필"/>
+        <PreferenceScreen
+            android:key="friend"
+            android:title="친구 확인"/>
+
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
