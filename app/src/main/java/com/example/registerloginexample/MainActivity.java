@@ -50,8 +50,11 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sendbird.android.GroupChannel;
+import com.sendbird.android.GroupChannelParams;
 import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
+import com.sendbird.android.User;
 import com.sendbird.android.handlers.InitResultHandler;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -65,6 +68,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
+import com.sendbird.android.shadow.com.google.gson.JsonArray;
+import com.sendbird.uikit.activities.ChannelActivity;
 
 
 import org.json.JSONException;
@@ -76,6 +81,7 @@ import java.util.Map;
 // , AppCompatActivity
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+    static Context mContext;
     private Button btn_open, btn_open2;
     private TextView tv_id, tv_pass;
     private DrawerLayout drawerLayout;
@@ -99,28 +105,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     // private TextView res_message, res_access_token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-        // chat SDK 초기화
-        // 다음 단계 부터는 모두 비동기이므로 handler가 필요하다. 안그러면 무한 콜백 지옥에 빠진다.
-        // When the useLocalCaching is set to true. (caching이 true로 세팅된 경우 동작.)
-        SendBird.init("96E21ACA-9F16-4971-A775-87BE1BD8804D", getApplicationContext(), true, new InitResultHandler() {
-            @Override
-            public void onMigrationStarted() {
-                Log.i("Application", "Called when there's an update in Sendbird server.");
-            }
-
-            @Override
-            public void onInitFailed(SendBirdException e) {
-                Log.i("Application", "Called when initialize failed. SDK will still operate properly as if useLocalCaching is set to false.");
-            }
-
-            @Override
-            public void onInitSucceed() {
-                Log.i("Application", "Called when initialization is completed.");
-            }
-        });
+        MainActivity.mContext = getApplicationContext();
 
         // activity_main.xml과 연결시켜주는 코드
         setContentView(R.layout.activity_main);
@@ -266,13 +252,75 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             .radius(3000)       // 반지름 단위 : m
                             .strokeWidth(1.0f)
                             .fillColor(Color.parseColor("#880000ff"));
-                    circle= mMap.addCircle(circle1KM);
+                    circle = mMap.addCircle(circle1KM);
                     circle.setCenter(curpoint);
+                    circle.setClickable(true);
+
+
+                    // 1. 유저 목록을 불러온다.
+                    userRequest userRequest = new userRequest();
+
+                    userRequest.sendUpdateuserRequest((jsonArray) -> {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            try {
+                                // JSONArray에서 각 항목을 가져옵니다.
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                                // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다.
+                                String id = jsonObject.getString("id"); // JSON 객체에서 필요한 데이터를 추출
+                                // 'lat'와 'lon' 값을 추출합니다.
+                                double lat = jsonObject.getDouble("lat");
+                                double lon = jsonObject.getDouble("lon");
+
+                                // LatLng 객체를 생성합니다.
+                                LatLng location = new LatLng(lat, lon);
+
+                                // 여기에서 LatLng 객체를 사용하여 지도에 마커를 추가합니다.
+                                mMap.addMarker(new MarkerOptions().position(location).title("Marker Title"));
+
+                                // 여기에서 가져온 데이터를 사용하여 작업 수행
+                                Log.i("testb", "id: " + id);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
 
 
 
+
+                    // 2. 불러온 유저 목록을 맵 위에 렌더링 한다.
+
+
+                    // 3. 렌더링 한 컴포넌트는 클릭이 가능하다.
+                    // 4. 클릭했을때는 유저 프로필을 보여준다.
+                    mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+                        @Override
+                        public void onCircleClick(@NonNull Circle circle) {
+                            // 5. 유저 프로필에서는 채팅하기 버튼이 있고, 이를 통해서 채팅이 가능하다.
+
+                            GroupChannelParams params = new GroupChannelParams();
+                            params.setName("Channel name");
+                            params.addUserId("soonhong");
+                            params.setDistinct(true);
+
+                            GroupChannel.createChannel(params, new GroupChannel.GroupChannelCreateHandler() {
+                                @Override
+                                public void onResult(GroupChannel groupChannel, SendBirdException e) {
+                                    if (e != null) {
+                                        Log.d("XXXX", e.getMessage());
+                                    } else {
+                                        // 생성이 완료됐다.
+                                        Intent intent = ChannelActivity.newIntent(getApplicationContext(), groupChannel.getUrl());
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
             });
+
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -316,37 +364,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-//    private void showMyLocationMarker(LatLng curPoint) {
-//        if (myLocationMarker == null) {
-//            myLocationMarker = new MarkerOptions(); // 마커 객체 생성
-//            myLocationMarker.position(curPoint);
-//            myMarker = mMap.addMarker(myLocationMarker);
-//        } else {
-//            myMarker.remove(); // 마커삭제
-////            myLocationMarker.position(curPoint);
-////            myMarker = mMap.addMarker(myLocationMarker);
-//        }
-//
-//        // 반경추가
-//        if (circle1KM == null) {
-//            circle1KM = new CircleOptions()
-//                    .center(curPoint) // 원점
-//                    .radius(3000)       // 반지름 단위 : m
-//                    .strokeWidth(1.0f)   // 선너비 0f : 선없음
-//                    .fillColor(Color.parseColor("#880000ff")); // 배경색
-//            circle = mMap.addCircle(circle1KM);
-//
-//
-//        } else {
-//            circle.remove(); // 반경삭제
-////            circle1KM.center(curPoint);
-////            circle = mMap.addCircle(circle1KM);
-//        }
-//
-//
-//    }
-
     //    위치 권한 설정
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -388,7 +405,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-
                     }
                 },
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
@@ -412,6 +428,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
                  Map<String,String> params = new HashMap<String,String>();
+                 // body값 http 요청 본문에 포함
                  params.put("lat", latitude);
                  params.put("lon", longitude);
                 return params;
@@ -425,6 +442,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 Map headers = new HashMap();
                 //headers.put("Content-Type", "application/json");
+                // 로컬 스토리지에 저장되는 쿠키
                 headers.put("Cookie", "access_token=" + accessToken );
 //                Map<String,String> headers = new HashMap<String, String>();
 //                headers.put("Accept","application/json");

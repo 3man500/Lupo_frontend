@@ -2,6 +2,8 @@ package com.example.registerloginexample;
 
 import static java.sql.DriverManager.println;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -22,6 +24,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.sendbird.android.SendBird;
+import com.sendbird.android.SendBirdException;
+import com.sendbird.android.User;
+import com.sendbird.android.handlers.InitResultHandler;
+import com.sendbird.uikit.SendBirdUIKit;
+import com.sendbird.uikit.adapter.SendBirdUIKitAdapter;
+import com.sendbird.uikit.interfaces.UserInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                             // 서버 key값으로 messege, access_token을 받는다
                             String message = jsonObject.getString("message");
                             String access_token = jsonObject.getString("access_token");
+                            // String nickname = jsonObject.getString("nickname");
 
                             Toast.makeText(getApplicationContext(), "보금자리에 온 것을 환영합니다", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -94,9 +104,13 @@ public class LoginActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("access_token", access_token);
                             editor.apply();
-                            //메소드 호출
-                            getPreferences(context);
-                            startActivity(intent);
+
+                            // 메소드 호출
+                            // callback execute가 실행되는 코드
+                            signInSendbird(userID, () -> {
+                                getPreferences(context);
+                                startActivity(intent);
+                            });
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
@@ -125,8 +139,77 @@ public class LoginActivity extends AppCompatActivity {
         println("요청 보냄.");
 
     }
+    @FunctionalInterface
+    interface Callback {
+        void execute();
+    }
+    public void signInSendbird(String userID, Callback callback) {
+        SendBirdUIKit.init(new SendBirdUIKitAdapter() {
+            @NonNull
+            @Override
+
+            public String getAppId() {
+                return "96E21ACA-9F16-4971-A775-87BE1BD8804D";  // Specify your Sendbird application ID.
+            }
+
+            @Nullable
+            @Override
+            public String getAccessToken() {
+                return "";
+            }
+
+            @NonNull
+            @Override
+            public UserInfo getUserInfo() {
+                return new UserInfo() {
+                    @Override
+                    public String getUserId() {
+                        return userID;  // Specify your user ID.
+                    }
+
+                    @Nullable
+                    @Override
+                    public String getNickname() {
+                        return userID;  // Specify your user nickname.
+                    }
+
+                    @Nullable
+                    @Override
+                    public String getProfileUrl() {
+                        return "";
+                    }
+                };
+            }
+
+            @NonNull
+            @Override
+            public InitResultHandler getInitResultHandler() {
+                return new InitResultHandler() {
+                    @Override
+                    public void onMigrationStarted() {
+                        // DB migration has started.
+                    }
+
+                    @Override
+                    public void onInitFailed(SendBirdException e) {
+                        // If DB migration fails, this method is called.
+                    }
+
+                    @Override
+                    public void onInitSucceed() {
+                        SendBirdUIKit.connect(new SendBird.ConnectHandler() {
+                            @Override
+                            public void onConnected(User user, SendBirdException e) {
+                                callback.execute();
+                            }
+                        });
+                    }
+                };
+            }
+        }, this);
+    }
 
     public static SharedPreferences getPreferences(Context context){
-        return context.getSharedPreferences("access_token", Context.MODE_PRIVATE);    }
-
+        return context.getSharedPreferences("access_token", Context.MODE_PRIVATE);
+    }
 }

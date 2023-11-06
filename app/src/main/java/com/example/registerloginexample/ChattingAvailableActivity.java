@@ -24,6 +24,8 @@ public class ChattingAvailableActivity extends AppCompatActivity {
         Log.v("테스트", "1");
         //여기까지 함
         Button btn_open_chatting_people_3 = (Button) findViewById(R.id.btn_open_chatting_people_3);
+        Button btn_open_chatting_people_2 = (Button) findViewById(R.id.btn_open_chatting_people_2);
+        Button btn_open_chatting_people_1 = (Button) findViewById(R.id.btn_open_chatting_people_1);
 
         btn_open_chatting_people_3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -35,66 +37,105 @@ public class ChattingAvailableActivity extends AppCompatActivity {
             }
         });
 
-         //sendbird 서버에 접속
-         //When useLocalCaching is set to true.
-         //You must receive the result of the InitResultHandler() before calling the connect().
-         //Any methods can be called once the user is connected to Sendbird server.
-        SendBird.connect("sendbird_desk_agent_id_faee4825-8cf4-4763-acd9-e797c3e80071", new SendBird.ConnectHandler() {
-            @Override
-            public void onConnected(User user, SendBirdException e) {
-                if (user != null) {
-                    if (e != null) {
-                        // Proceed in offline mode with the data stored in the local database.
-                        // Later, connection will be made automatically
-                        // and can be notified through the ConnectionHandler.onReconnectSucceeded().
-                    } else {
-                        // Proceed in online mode.
-                    }
-                } else {
-                    // Handle error.
-                }
+        btn_open_chatting_people_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                // ChattingAvailableActivity에서 ChattingActivity로 연결해주는 intent
+                Intent intent = new Intent(ChattingAvailableActivity.this, ChattingActivity.class);
+                Log.v("테스트", "1");
+                // ChattingActivity를 실행하라
+                startActivity(intent);
             }
         });
 
-        // 새 공개 채널 만들기. 모든 사용자가 초대없이 쉽게 참여할 수 있는곳.
-        // The following sample code continues from Step 6.
-        OpenChannel.createChannel(new OpenChannel.OpenChannelCreateHandler() {
-            @Override
-            public void onResult(OpenChannel openChannel, SendBirdException e) {
-                if (e != null) {
-                    // Handle error.
-                }
-
-                // Call the instance method of the result object in the openChannel parameter of the onResult() callback method.
-                // 에러가 뜨는 곳 70번째 줄
-                openChannel.enter(new OpenChannel.OpenChannelEnterHandler() {
-                    @Override
-                    public void onResult(SendBirdException e) {
-                        if (e != null) {
-                            // Handle error.
-                        }
-
-                        // The current user successfully enters the open channel,
-                        // and can chat with other users in the channel by using APIs.
-                    }
-                });
-
-                openChannel.sendUserMessage("hello", new BaseChannel.SendUserMessageHandler() {
-                    @Override
-                    public void onSent(UserMessage userMessage, SendBirdException e) {
-                        if (e != null) {
-                            // Handle error.
-                        }
-
-                        // The message is successfully sent to the channel.
-                        // The current user can receive messages from other users
-                        // through the onMessageReceived() method of an event handler.
-                    }
-                });
-
+        btn_open_chatting_people_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                // ChattingAvailableActivity에서 ChattingActivity로 연결해주는 intent
+                Intent intent = new Intent(ChattingAvailableActivity.this, ChattingActivity.class);
+                Log.v("테스트", "1");
+                // ChattingActivity를 실행하라
+                startActivity(intent);
             }
         });
-         //sendbird api 끝
+
+
+//         //sendbird 서버에 접속
+//         //When useLocalCaching is set to true.
+//         //You must receive the result of the InitResultHandler() before calling the connect().
+//         //Any methods can be called once the user is connected to Sendbird server.
+//        SendBird.connect("sendbird_desk_agent_id_faee4825-8cf4-4763-acd9-e797c3e80071", new SendBird.ConnectHandler() {
+//            @Override
+//            public void onConnected(User user, SendBirdException e) {
+//                if (user != null) {
+//                    if (e != null) {
+//                        // Proceed in offline mode with the data stored in the local database.
+//                        // Later, connection will be made automatically
+//                        // and can be notified through the ConnectionHandler.onReconnectSucceeded().
+//                    } else {
+//                        // Proceed in online mode.
+//                    }
+//                } else {
+//                    // Handle error.
+//                }
+//            }
+//        });
+//
+//        // 새 공개 채널 만들기. 모든 사용자가 초대없이 쉽게 참여할 수 있는곳.
+//        // The following sample code continues from Step 6.
+//        OpenChannel.createChannel(new OpenChannel.OpenChannelCreateHandler() {
+//            @Override
+//            public void onResult(OpenChannel openChannel, SendBirdException e) {
+//                if (e != null) {
+//                    // Handle error.
+//                }
+//
+//                // Call the instance method of the result object in the openChannel parameter of the onResult() callback method.
+//                // 에러가 뜨는 곳 70번째 줄
+//                openChannel.enter(new OpenChannel.OpenChannelEnterHandler() {
+//                    @Override
+//                    public void onResult(SendBirdException e) {
+//                        if (e != null) {
+//                            // Handle error.
+//                        }
+//
+//                        // The current user successfully enters the open channel,
+//                        // and can chat with other users in the channel by using APIs.
+//                    }
+//                });
+//
+//                openChannel.sendUserMessage("hello", new BaseChannel.SendUserMessageHandler() {
+//                    @Override
+//                    public void onSent(UserMessage userMessage, SendBirdException e) {
+//                        if (e != null) {
+//                            // Handle error.
+//                        }
+//
+//                        // The message is successfully sent to the channel.
+//                        // The current user can receive messages from other users
+//                        // through the onMessageReceived() method of an event handler.
+//                    }
+//                });
+//
+//            }
+//        });
+//         //sendbird api 끝
+//
+//        OpenChannel.getChannel("test", new OpenChannel.OpenChannelGetHandler() {
+//            @Override
+//            public void onResult(OpenChannel openChannel, SendBirdException e) {
+//                if (e != null) {    // Error.
+//                    return;
+//                }
+//
+//                openChannel.enter(new OpenChannel.OpenChannelEnterHandler() {
+//                    @Override
+//                    public void onResult(SendBirdException e) {
+//                        if (e != null) {    // Error.
+//                            return;
+//                        }
+//                    }
+//                });
+//            }
+//        });
 
     }
 }

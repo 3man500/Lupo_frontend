@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+    xmlns:tools="http://schemas.android.com/tools"
+    >
     <!-- 인터넷 권한 선언 -->
     <uses-permission android:name="android.permission.INTERNET" />
 <!--    GPS 권한 선언-->
@@ -10,10 +10,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <!--    네트워크 환경 권한-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!--    저장소 읽기, 쓰기-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <!--    백그라운드 위치-->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION">
-
     </uses-permission>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -26,11 +31,24 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+
+        <activity android:name=".ChattingActivity">
+        </activity>
+<!--            android:exported="false"-->
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                ...-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+
+
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
-        <activity android:name=".ChattingActivity"
-            android:exported="false"/>
+<!--        <activity-->
+<!--            android:name=".ChattingActivity"-->
+<!--            android:exported="false"/>-->
         <activity
             android:name=".ChattingAvailableActivity"
             android:exported="false" />
@@ -78,3 +96,4 @@
     </application>
 
 </manifest>
+
