@@ -26,33 +26,41 @@ import java.util.Map;
 import android.content.SharedPreferences;
 
 public class userRequest {
+
+    // 콜백 함수는 일반적으로 비동기 작업이나 이벤트 처리와 관련이 있으며, 이를 통해 이벤트가 발생하면 특정 작업이 실행
     interface Callback {
         void execute(JSONArray jsonArray);
     };
+
 
     public void sendUpdateuserRequest(Callback callback) {
         String url = "http://10.0.2.2:3000/auth/users/adjacency";
 
         StringRequest request = new StringRequest(
+                // GET: 리소스에서 데이터를 요청
                 Request.Method.GET,
                 url,
                 new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
                     @Override
 
+                    // onResponse: 네트워크 요청에 대한 응답 문자열을 받아와서 처리하는 역할
                     public void onResponse(String response) {
                         JSONArray jsonArray = null;
 
                         try {
+                            // 문자열 response를 기반으로 새로운 JSON 배열 jsonArray를 생성
                             jsonArray = new JSONArray(response);
                             Log.i("testa", jsonArray.toString());
                             // return 값 넣기
+                            // 콜백(callback)을 호출하여 jsonArray를 전달
+                            // 여기까지 오면 실행할 것들을 빈칸 뚫어 놓기
                             callback.execute(jsonArray);
 
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-
                     }
+
                 },
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
                     @Override
@@ -67,8 +75,6 @@ public class userRequest {
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // body값 http 요청 본문에 포함
-
                 return params;
             }
 
@@ -76,21 +82,14 @@ public class userRequest {
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 SharedPreferences preferences = MainActivity.mContext.getSharedPreferences("myPref", MODE_PRIVATE);
+
+                // preference 파일에 저장한 access token 값을 이용하는 코드
                 String accessToken = preferences.getString("access_token", "dd");
 
                 Map headers = new HashMap();
                 //headers.put("Content-Type", "application/json");
                 // 로컬 스토리지에 저장되는 쿠키
                 headers.put("Cookie", "access_token=" + accessToken);
-//                Map<String,String> headers = new HashMap<String, String>();
-//                headers.put("Accept","application/json");
-//
-//
-//                if(!MyApplication.getCookie(context).equals("")){
-//                    String cookie = MyApplication.getCookie(context);
-//                    Show.m("Cookie to load from preferences: " + cookie);
-//                    headers.put("Cookie", cookie);
-//                }
 
                 return headers;
             }

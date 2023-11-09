@@ -2,8 +2,6 @@ package com.example.registerloginexample;
 
 
 import static java.sql.DriverManager.println;
-
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,9 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -38,7 +34,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
 import com.example.registerloginexample.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,23 +47,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sendbird.android.GroupChannel;
 import com.sendbird.android.GroupChannelParams;
-import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
-import com.sendbird.android.User;
-import com.sendbird.android.handlers.InitResultHandler;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.example.registerloginexample.databinding.ActivityMapsBinding;
-import com.sendbird.android.shadow.com.google.gson.JsonArray;
 import com.sendbird.uikit.activities.ChannelActivity;
 
 
@@ -187,12 +166,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         String message = intent.getStringExtra("message");
         String access_token = intent.getStringExtra("access_token");
 
-        // 해당 messege와 access_token을 화면에 띄울 필요가 없으므로 주석처리 (xml과 연결하는 코드 필요 없음)
-        // res_message = findViewById(R.id.res_message);
-        // res_access_token = findViewById(R.id.res_access_token);
-        // res_message.setText(message);
-        // res_access_token.setText(access_token);
-
 
         // drawer layout을 오른쪽이나 왼쪽으로 슬라이드 했을 때 이곳에서 상태값을 받아온다.
         // 추가 기능 구현 할 때 함수안에 적으면 된다.
@@ -258,14 +231,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     // 1. 유저 목록을 불러온다.
+                    // "userRequest"라는 변수에 "userRequest" 클래스(또는 데이터 타입)의 새로운 객체 인스턴스를 할당하는 것
+                    // 앞에 있는 userRequest는 클래스 명, 뒤에 있는 userRequest는 변수
                     userRequest userRequest = new userRequest();
 
                     userRequest.sendUpdateuserRequest((jsonArray) -> {
+                        // userRequest 객체의 sendUpdateuserRequest 메소드를 호출하고, 람다식을 전달하여 콜백을 설정.
+                        // 이 콜백은 jsonArray 매개변수를 받아와서 처리
                         for (int i = 0; i < jsonArray.length(); i++) {
                             try {
                                 // JSONArray에서 각 항목을 가져옵니다.
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                                 // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다.
                                 String id = jsonObject.getString("id"); // JSON 객체에서 필요한 데이터를 추출
                                 // 'lat'와 'lon' 값을 추출합니다.
@@ -290,8 +266,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     // 2. 불러온 유저 목록을 맵 위에 렌더링 한다.
-
-
                     // 3. 렌더링 한 컴포넌트는 클릭이 가능하다.
                     // 4. 클릭했을때는 유저 프로필을 보여준다.
                     mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
@@ -416,14 +390,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         ) {
-//            @Override
-//            public Map<String, String> getParams() throws AuthFailureError {
-//                Map params = new HashMap();
-//                // Map<String,String> params = new HashMap<String,String>();
-//                params.put("lat", latitude + "");
-//                params.put("lon", longitude + "");
-//                return params;
-//            }
 
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
@@ -444,16 +410,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 //headers.put("Content-Type", "application/json");
                 // 로컬 스토리지에 저장되는 쿠키
                 headers.put("Cookie", "access_token=" + accessToken );
-//                Map<String,String> headers = new HashMap<String, String>();
-//                headers.put("Accept","application/json");
-//
-//
-//                if(!MyApplication.getCookie(context).equals("")){
-//                    String cookie = MyApplication.getCookie(context);
-//                    Show.m("Cookie to load from preferences: " + cookie);
-//                    headers.put("Cookie", cookie);
-//                }
-
                 return headers;
             }
         };

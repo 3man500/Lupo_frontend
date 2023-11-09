@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     public void sendloginRequest(String userID, String userPassword) {
         String url = "http://10.0.2.2:3000/auth/signin";
         StringRequest request = new StringRequest(
+                // POST는 리소스를 생성/ 업데이트 하기 위해 서버에 데이터를 보내는 데 사용됩니다.
                 Request.Method.POST,
                 url,
                 new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
@@ -100,6 +101,8 @@ public class LoginActivity extends AppCompatActivity {
                             intent.putExtra("access_token", access_token);
                             //Editor를 preferences에 쓰겠다고 연결
 
+                            // 반환받은 accesstoken을 파일에 저장하는 작업
+                            // 서버에 계속 요청하는 것보다 저장하는 것이 필요
                             sharedPreferences = context.getSharedPreferences("myPref", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("access_token", access_token);
@@ -107,8 +110,11 @@ public class LoginActivity extends AppCompatActivity {
 
                             // 메소드 호출
                             // callback execute가 실행되는 코드
+                            // (): callback 함수를 의미한다.
+                            // userID: 사용자 lupo id
                             signInSendbird(userID, () -> {
                                 getPreferences(context);
+                                // init이 설정됐으면, Main Activity를 실행한다.
                                 startActivity(intent);
                             });
                         } catch (JSONException e) {
@@ -144,10 +150,12 @@ public class LoginActivity extends AppCompatActivity {
         void execute();
     }
     public void signInSendbird(String userID, Callback callback) {
+        // 초기화를 uikit의 init만 있어도 할 수 있다.
         SendBirdUIKit.init(new SendBirdUIKitAdapter() {
             @NonNull
             @Override
 
+            // lupo와 sendbird를 연결해주기 위한 id
             public String getAppId() {
                 return "96E21ACA-9F16-4971-A775-87BE1BD8804D";  // Specify your Sendbird application ID.
             }
@@ -210,6 +218,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public static SharedPreferences getPreferences(Context context){
+        // Context 객체를 입력으로 받아와서 SharedPreferences 객체를 반환
+        // Context는 Android 애플리케이션의 환경과 상태에 대한 정보를 제공하는 클래스
         return context.getSharedPreferences("access_token", Context.MODE_PRIVATE);
     }
 }

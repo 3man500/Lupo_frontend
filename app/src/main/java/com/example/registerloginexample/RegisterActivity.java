@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText et_register_id, et_register_password, et_name, et_age;
+    private EditText et_register_id, et_register_password, et_name, et_age, et_gender, et_nickname, et_phone;
     private Button btn_register;
 
     @Override
@@ -41,6 +41,9 @@ public class RegisterActivity extends AppCompatActivity {
         et_register_password = findViewById(R.id.et_register_password);
         et_name = findViewById(R.id.et_name);
         et_age = findViewById(R.id.et_age);
+        et_gender = findViewById(R.id.et_gender);
+        et_nickname = findViewById(R.id.et_nickname);
+        et_phone = findViewById(R.id.et_phone);
 
         // 회원가입 버튼 클릭 시 수행
         btn_register = findViewById(R.id.btn_register);
@@ -52,19 +55,22 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // editText에 현재 입력되어 있는 값을 get해온다. 가져온다.
-                String userID = et_register_id.getText().toString();
+                String userName = et_register_id.getText().toString();
                 String userPass = et_register_password.getText().toString();
-                String userName = et_name.getText().toString();
+                String realname = et_name.getText().toString();
                 int userAge = Integer.parseInt(et_age.getText().toString());
-                Log.v("테스트", "1");
+                String nickname = et_nickname.getText().toString();
+                String gender = et_gender.getText().toString();
+                String phone = et_phone.getText().toString();
+                Log.v("테트스트", et_age.getText().toString());
                 //sendloginRequest로 서버에 userPass와 userID를 보낸다. 이때 userID는 서버의 username과 같다. 순서 바꾸면 안된다.
                 // 나중에 서버의 username을 userid로 고칠 예정
-                sendRequest(userID, userPass, userName, userAge);
+                sendRequest(userName, userPass, realname, userAge, nickname, gender, phone);
             }
         });
     }
 
-    public void sendRequest(String userID, String userPassword, String userName, int userAge) {
+    public void sendRequest(String userName, String userPassword, String realname, int userAge, String nickname, String gender, String phone) {
         String url = "http://10.0.2.2:3000/auth/signup";
         StringRequest request = new StringRequest(
                 Request.Method.POST,
@@ -90,10 +96,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<String,String>();
-                params.put("userID", userID);
-                params.put("password", userPassword);
                 params.put("username", userName);
-                params.put("userAge", userAge + "");
+                params.put("password", userPassword);
+                // lupo id
+                params.put("nickname", nickname);
+                params.put("age", userAge + "");
+                params.put("realname", realname);
+                params.put("gender", gender);
+                params.put("phone", phone);
                 return params;
             }
         };
