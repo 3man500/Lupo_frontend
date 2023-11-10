@@ -45,16 +45,26 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sendbird.android.ApplicationUserListQuery;
 import com.sendbird.android.GroupChannel;
 import com.sendbird.android.GroupChannelParams;
+import com.sendbird.android.OpenChannel;
+import com.sendbird.android.OpenChannelParams;
+import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
+import com.sendbird.android.User;
+import com.sendbird.android.UserListQuery;
+import com.sendbird.uikit.SendBirdUIKit;
 import com.sendbird.uikit.activities.ChannelActivity;
+import com.sendbird.uikit.adapter.SendBirdUIKitAdapter;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // , AppCompatActivity
@@ -235,63 +245,108 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     // 앞에 있는 userRequest는 클래스 명, 뒤에 있는 userRequest는 변수
                     userRequest userRequest = new userRequest();
 
+                    ArrayList<String> userIds = new ArrayList<>();
                     userRequest.sendUpdateuserRequest((jsonArray) -> {
                         // userRequest 객체의 sendUpdateuserRequest 메소드를 호출하고, 람다식을 전달하여 콜백을 설정.
                         // 이 콜백은 jsonArray 매개변수를 받아와서 처리
+
                         for (int i = 0; i < jsonArray.length(); i++) {
                             try {
                                 // JSONArray에서 각 항목을 가져옵니다.
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다.
+                                // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다. username으로 sendbird id 연동 가능
                                 String id = jsonObject.getString("id"); // JSON 객체에서 필요한 데이터를 추출
-                                // 'lat'와 'lon' 값을 추출합니다.
+                                String username = jsonObject.getString("username");
+                                String gender = jsonObject.getString("gender");
+                                String nickname = jsonObject.getString("nickname");
                                 double lat = jsonObject.getDouble("lat");
                                 double lon = jsonObject.getDouble("lon");
+                                int age = jsonObject.getInt("age");
+                                userIds.add(username);
 
                                 // LatLng 객체를 생성합니다.
                                 LatLng location = new LatLng(lat, lon);
 
                                 // 여기에서 LatLng 객체를 사용하여 지도에 마커를 추가합니다.
-                                mMap.addMarker(new MarkerOptions().position(location).title("Marker Title"));
+                                // mMap.addMarker(new MarkerOptions().position(location).title("Marker Title"));
+
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(location)
+                                        .title(username)
+                                        .snippet("Age: " + age + ", Gender: " + gender + ", Nickname: " + nickname));
 
                                 // 여기에서 가져온 데이터를 사용하여 작업 수행
-                                Log.i("testb", "id: " + id);
+                                Log.i("가까운 user 하나씩 나열", "id: " + id + " username: " + username + " age: " + age + " gender: " + gender + " nickname: " + nickname);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
 
+                    // userid array 매핑
+                    ApplicationUserListQuery listQuery = SendBird.createApplicationUserListQuery();
+                    listQuery.setUserIdsFilter(userIds);
+
+                    listQuery.next(new UserListQuery.UserListQueryResultHandler() {
+                        @Override
+                        public void onResult(List<User> list, SendBirdException e) {
+                            if (e != null) {
+                                // Handle error.
+                            }
+
+                            // A list of matching users is successfully retrieved.
+//                            if (list.get(0).getConnectionStatus() == User.ConnectionStatus.ONLINE) {
+//                                // 'Jeff' is currently online.
+//                                // User.ConnectionStatus consists of NON_AVAILABLE, ONLINE, and OFFLINE.
+//
+//                            }
+                        }
+                    });
+
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            // 마커를 클릭했을 때의 동작을 정의합니다.
+                            // 여기에서 원하는 정보를 가져와서 토스트로 출력하는 코드를 추가하면 됩니다.
+                            String username = marker.getTitle();
+                            Log.i("센드버드 아이디 -> ", username);
+                            String snippet = marker.getSnippet();
+                            String[] parts = snippet.split(", ");
+                            String nickname = parts[2].substring("Nickname: ".length());
+
+                            GroupChannelParams params = new GroupChannelParams();
+                            params.setName(nickname);
+                            params.addUserId(username);
+                            params.setDistinct(true);
+
+                            GroupChannel.createChannel(params, new GroupChannel.GroupChannelCreateHandler() {
+                                @Override
+                                public void onResult(GroupChannel groupChannel, SendBirdException e) {
+                                    Log.i("그룹채널", "성공");
+                                    if (e != null) {
+                                        Log.d("XXXX", e.getMessage());
+                                    }
+
+                                    // Open the created chat channel
+                                    Intent intent = ChannelActivity.newIntent(getApplicationContext(), groupChannel.getUrl());
+                                    startActivity(intent);
+                                }
+                            });
+
+                            // 토스트로 정보 출력
+                            Toast.makeText(getApplicationContext(), "Username: " + username + "\n" + snippet, Toast.LENGTH_SHORT).show();
+
+                            // true를 반환하면 마커 클릭 이벤트가 소비되었음을 나타냅니다.
+                            // false를 반환하면 이후 기본 동작도 함께 수행됩니다.
+                            return true;
+                        }
+                    });
 
 
 
                     // 2. 불러온 유저 목록을 맵 위에 렌더링 한다.
                     // 3. 렌더링 한 컴포넌트는 클릭이 가능하다.
                     // 4. 클릭했을때는 유저 프로필을 보여준다.
-                    mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
-                        @Override
-                        public void onCircleClick(@NonNull Circle circle) {
-                            // 5. 유저 프로필에서는 채팅하기 버튼이 있고, 이를 통해서 채팅이 가능하다.
-
-                            GroupChannelParams params = new GroupChannelParams();
-                            params.setName("Channel name");
-                            params.addUserId("soonhong");
-                            params.setDistinct(true);
-
-                            GroupChannel.createChannel(params, new GroupChannel.GroupChannelCreateHandler() {
-                                @Override
-                                public void onResult(GroupChannel groupChannel, SendBirdException e) {
-                                    if (e != null) {
-                                        Log.d("XXXX", e.getMessage());
-                                    } else {
-                                        // 생성이 완료됐다.
-                                        Intent intent = ChannelActivity.newIntent(getApplicationContext(), groupChannel.getUrl());
-                                        startActivity(intent);
-                                    }
-                                }
-                            });
-                        }
-                    });
                 }
             });
 
@@ -384,7 +439,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        VolleyLog.v("testa", error);
+                        VolleyLog.v("error response", error);
                         Toast.makeText(getApplicationContext(), "위치 정보 업데이트에 실패하였습니다", Toast.LENGTH_SHORT).show();
                         return;
                     }

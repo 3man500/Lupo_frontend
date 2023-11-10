@@ -50,7 +50,7 @@ public class userRequest {
                         try {
                             // 문자열 response를 기반으로 새로운 JSON 배열 jsonArray를 생성
                             jsonArray = new JSONArray(response);
-                            Log.i("testa", jsonArray.toString());
+                            Log.i("모든 json Array", jsonArray.toString());
                             // return 값 넣기
                             // 콜백(callback)을 호출하여 jsonArray를 전달
                             // 여기까지 오면 실행할 것들을 빈칸 뚫어 놓기
