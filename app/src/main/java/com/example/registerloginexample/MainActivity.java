@@ -42,9 +42,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sendbird.android.GroupChannel;
+import com.sendbird.android.GroupChannelListQuery;
 import com.sendbird.android.GroupChannelParams;
 import com.sendbird.android.SendBirdException;
+import com.sendbird.uikit.SendBirdUIKit;
 import com.sendbird.uikit.activities.ChannelActivity;
+import com.sendbird.uikit.activities.ChannelListActivity;
 
 
 import org.json.JSONArray;
@@ -199,12 +202,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        // The minimum time between updates in milliseconds
-        final long MIN_TIME_BW_UPDATES = 50; // 3 seconds
-        boolean isNetworkEnabled = false;
-
-
-
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -244,8 +241,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //1초마다 위치 갱신 , 10미터마다 위치 갱신
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,3000,0,locationListener);
-        // locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,10000,0,locationListener);
 
     }
     // on create 문 끝
@@ -329,6 +325,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         AppHelper.requestQueue.add(request);
         println("요청 보냄.");
 
+        // Handler 선언
+        Handler mHandler = new Handler();
+        // 데이터를 업데이트하는 지연 시간을 설정 (5초)
+        final int UPDATE_DELAY = 5000;
+
+
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -350,12 +352,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 circle1KM = new CircleOptions()
                         .center(curpoint)
-                        .radius(3000)       // 반지름 단위 : m
+                        .radius(5000)       // 반지름 단위 : m
                         .strokeWidth(1.0f)
                         .fillColor(Color.parseColor("#880000ff"));
                 circle = mMap.addCircle(circle1KM);
                 circle.setCenter(curpoint);
                 circle.setClickable(true);
+
+                GoogleMap.OnCircleClickListener circleClickListener = new GoogleMap.OnCircleClickListener() {
+                    @Override
+                    public void onCircleClick(Circle circle) {
+                        // Circle이 클릭되었을 때 실행되는 코드
+                        // 예시로 채널 목록 액티비티를 열도록 설정
+                        Intent intent = ChannelListActivity.newIntent(MainActivity.this);
+                        startActivity(intent);
+
+                    }
+                };
+
+                mMap.setOnCircleClickListener(circleClickListener);
 
 
                 // 1. 유저 목록을 불러온다.
@@ -363,12 +378,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // 앞에 있는 userRequest는 클래스 명, 뒤에 있는 userRequest는 변수
 
 
-                userRequest userRequest = new userRequest();
+
                 userRequest.sendUpdateuserRequest((jsonArray) -> {
                     // userRequest 객체의 sendUpdateuserRequest 메소드를 호출하고, 람다식을 전달하여 콜백을 설정.
                     // 이 콜백은 jsonArray 매개변수를 받아와서 처리
 
-
+//                    mHandler.postDelayed(mUpdateRunnable, UPDATE_DELAY);
+                    int count = 0;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         try {
                             // JSONArray에서 각 항목을 가져옵니다.
@@ -392,8 +408,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
                             };
 
-                            // 여기에서 가져온 데이터를 사용하여 작업 수행
-                            Log.i("가까운 user 하나씩 나열", "id: " + id + " username: " + username + " age: " + age + " gender: " + gender + " nickname: " + nickname);
+                            // 여기에서 가져온 데이터를 사용하여 작업 수행열
+
+                            Log.i(count + "번째 가까운 user", "id: " + id + " username: " + username + " age: " + age + " gender: " + gender + " nickname: " + nickname);
+                            count++;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

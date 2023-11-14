@@ -33,7 +33,7 @@ public class userRequest {
     };
 
 
-    public void sendUpdateuserRequest(Callback callback) {
+    public static void sendUpdateuserRequest(Callback callback) {
         String url = "http://10.0.2.2:3000/auth/users/adjacency";
 
         StringRequest request = new StringRequest(
