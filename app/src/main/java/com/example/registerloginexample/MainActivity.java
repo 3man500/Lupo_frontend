@@ -3,12 +3,8 @@ package com.example.registerloginexample;
 
 import static java.sql.DriverManager.println;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Context;
@@ -19,8 +15,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,27 +41,19 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sendbird.android.ApplicationUserListQuery;
 import com.sendbird.android.GroupChannel;
 import com.sendbird.android.GroupChannelParams;
-import com.sendbird.android.OpenChannel;
-import com.sendbird.android.OpenChannelParams;
-import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
-import com.sendbird.android.User;
-import com.sendbird.android.UserListQuery;
-import com.sendbird.uikit.SendBirdUIKit;
 import com.sendbird.uikit.activities.ChannelActivity;
-import com.sendbird.uikit.adapter.SendBirdUIKitAdapter;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 // , AppCompatActivity
 
@@ -211,144 +199,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-
-                    mMap = googleMap;
-                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                        return;
-                    }
-                    LatLng curpoint = new LatLng(cur_lat, cul_lon);
-
-                    //    마커로 위치 표시
-//                    showMyLocationMarker(curpoint);
-                    // 현재위치로 카메라 이동 및 확대
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curpoint, 13));
-                    mMap.setMyLocationEnabled(true);
-                    circle1KM = new CircleOptions()
-                            .center(curpoint)
-                            .radius(3000)       // 반지름 단위 : m
-                            .strokeWidth(1.0f)
-                            .fillColor(Color.parseColor("#880000ff"));
-                    circle = mMap.addCircle(circle1KM);
-                    circle.setCenter(curpoint);
-                    circle.setClickable(true);
+        // The minimum time between updates in milliseconds
+        final long MIN_TIME_BW_UPDATES = 50; // 3 seconds
+        boolean isNetworkEnabled = false;
 
 
-                    // 1. 유저 목록을 불러온다.
-                    // "userRequest"라는 변수에 "userRequest" 클래스(또는 데이터 타입)의 새로운 객체 인스턴스를 할당하는 것
-                    // 앞에 있는 userRequest는 클래스 명, 뒤에 있는 userRequest는 변수
-                    userRequest userRequest = new userRequest();
-
-                    ArrayList<String> userIds = new ArrayList<>();
-                    userRequest.sendUpdateuserRequest((jsonArray) -> {
-                        // userRequest 객체의 sendUpdateuserRequest 메소드를 호출하고, 람다식을 전달하여 콜백을 설정.
-                        // 이 콜백은 jsonArray 매개변수를 받아와서 처리
-
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            try {
-                                // JSONArray에서 각 항목을 가져옵니다.
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다. username으로 sendbird id 연동 가능
-                                String id = jsonObject.getString("id"); // JSON 객체에서 필요한 데이터를 추출
-                                String username = jsonObject.getString("username");
-                                String gender = jsonObject.getString("gender");
-                                String nickname = jsonObject.getString("nickname");
-                                double lat = jsonObject.getDouble("lat");
-                                double lon = jsonObject.getDouble("lon");
-                                int age = jsonObject.getInt("age");
-                                userIds.add(username);
-
-                                // LatLng 객체를 생성합니다.
-                                LatLng location = new LatLng(lat, lon);
-
-                                // 여기에서 LatLng 객체를 사용하여 지도에 마커를 추가합니다.
-                                // mMap.addMarker(new MarkerOptions().position(location).title("Marker Title"));
-
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(location)
-                                        .title(username)
-                                        .snippet("Age: " + age + ", Gender: " + gender + ", Nickname: " + nickname));
-
-                                // 여기에서 가져온 데이터를 사용하여 작업 수행
-                                Log.i("가까운 user 하나씩 나열", "id: " + id + " username: " + username + " age: " + age + " gender: " + gender + " nickname: " + nickname);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
-                    // userid array 매핑
-                    ApplicationUserListQuery listQuery = SendBird.createApplicationUserListQuery();
-                    listQuery.setUserIdsFilter(userIds);
-
-                    listQuery.next(new UserListQuery.UserListQueryResultHandler() {
-                        @Override
-                        public void onResult(List<User> list, SendBirdException e) {
-                            if (e != null) {
-                                // Handle error.
-                            }
-
-                            // A list of matching users is successfully retrieved.
-//                            if (list.get(0).getConnectionStatus() == User.ConnectionStatus.ONLINE) {
-//                                // 'Jeff' is currently online.
-//                                // User.ConnectionStatus consists of NON_AVAILABLE, ONLINE, and OFFLINE.
-//
-//                            }
-                        }
-                    });
-
-                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(Marker marker) {
-                            // 마커를 클릭했을 때의 동작을 정의합니다.
-                            // 여기에서 원하는 정보를 가져와서 토스트로 출력하는 코드를 추가하면 됩니다.
-                            String username = marker.getTitle();
-                            Log.i("센드버드 아이디 -> ", username);
-                            String snippet = marker.getSnippet();
-                            String[] parts = snippet.split(", ");
-                            String nickname = parts[2].substring("Nickname: ".length());
-
-                            GroupChannelParams params = new GroupChannelParams();
-                            params.setName(nickname);
-                            params.addUserId(username);
-                            params.setDistinct(true);
-
-                            GroupChannel.createChannel(params, new GroupChannel.GroupChannelCreateHandler() {
-                                @Override
-                                public void onResult(GroupChannel groupChannel, SendBirdException e) {
-                                    Log.i("그룹채널", "성공");
-                                    if (e != null) {
-                                        Log.d("XXXX", e.getMessage());
-                                    }
-
-                                    // Open the created chat channel
-                                    Intent intent = ChannelActivity.newIntent(getApplicationContext(), groupChannel.getUrl());
-                                    startActivity(intent);
-                                }
-                            });
-
-                            // 토스트로 정보 출력
-                            Toast.makeText(getApplicationContext(), "Username: " + username + "\n" + snippet, Toast.LENGTH_SHORT).show();
-
-                            // true를 반환하면 마커 클릭 이벤트가 소비되었음을 나타냅니다.
-                            // false를 반환하면 이후 기본 동작도 함께 수행됩니다.
-                            return true;
-                        }
-                    });
-
-
-
-                    // 2. 불러온 유저 목록을 맵 위에 렌더링 한다.
-                    // 3. 렌더링 한 컴포넌트는 클릭이 가능하다.
-                    // 4. 클릭했을때는 유저 프로필을 보여준다.
-                }
-            });
 
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
@@ -389,9 +244,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //1초마다 위치 갱신 , 10미터마다 위치 갱신
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,1000,10,locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,3000,0,locationListener);
+        // locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
     }
+    // on create 문 끝
 
     //    위치 권한 설정
     @Override
@@ -414,7 +271,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     // 서버에서 받은 response 인 messege와 access_token을 loginactivity에서 가지고 온다.
     // private TextView res_message, res_access_token;
-
 
 
     public void sendUpdateLocationRequest(String latitude, String longitude) {
@@ -472,6 +328,124 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
         println("요청 보냄.");
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                mMap = googleMap;
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                    return;
+                }
+                LatLng curpoint = new LatLng(cur_lat, cul_lon);
+
+                //    마커로 위치 표시
+//                    showMyLocationMarker(curpoint);
+                // 현재위치로 카메라 이동 및 확대
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curpoint, 13));
+                mMap.setMyLocationEnabled(true);
+                circle1KM = new CircleOptions()
+                        .center(curpoint)
+                        .radius(3000)       // 반지름 단위 : m
+                        .strokeWidth(1.0f)
+                        .fillColor(Color.parseColor("#880000ff"));
+                circle = mMap.addCircle(circle1KM);
+                circle.setCenter(curpoint);
+                circle.setClickable(true);
+
+
+                // 1. 유저 목록을 불러온다.
+                // "userRequest"라는 변수에 "userRequest" 클래스(또는 데이터 타입)의 새로운 객체 인스턴스를 할당하는 것
+                // 앞에 있는 userRequest는 클래스 명, 뒤에 있는 userRequest는 변수
+
+
+                userRequest userRequest = new userRequest();
+                userRequest.sendUpdateuserRequest((jsonArray) -> {
+                    // userRequest 객체의 sendUpdateuserRequest 메소드를 호출하고, 람다식을 전달하여 콜백을 설정.
+                    // 이 콜백은 jsonArray 매개변수를 받아와서 처리
+
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            // JSONArray에서 각 항목을 가져옵니다.
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            // 이제 jsonObject를 사용하여 원하는 작업을 수행할 수 있습니다. username으로 sendbird id 연동 가능
+                            String id = jsonObject.getString("id"); // JSON 객체에서 필요한 데이터를 추출
+                            String username = jsonObject.getString("username");
+                            String gender = jsonObject.getString("gender");
+                            String nickname = jsonObject.getString("nickname");
+                            double lat = jsonObject.getDouble("lat");
+                            double lon = jsonObject.getDouble("lon");
+                            int age = jsonObject.getInt("age");
+                            // LatLng 객체를 생성합니다.
+                            LatLng location = new LatLng(lat, lon);
+
+                            if (mMap != null) {
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(location)
+                                        .title(username)
+                                        .snippet("Age: " + age + ", Gender: " + gender + ", Nickname: " + nickname));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+                            };
+
+                            // 여기에서 가져온 데이터를 사용하여 작업 수행
+                            Log.i("가까운 user 하나씩 나열", "id: " + id + " username: " + username + " age: " + age + " gender: " + gender + " nickname: " + nickname);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        // 마커를 클릭했을 때의 동작을 정의합니다.
+                        // 여기에서 원하는 정보를 가져와서 토스트로 출력하는 코드를 추가하면 됩니다.
+                        String username = marker.getTitle();
+                        Log.i("센드버드 아이디 -> ", username);
+                        String snippet = marker.getSnippet();
+                        String[] parts = snippet.split(", ");
+                        String nickname = parts[2].substring("Nickname: ".length());
+
+                        GroupChannelParams params = new GroupChannelParams();
+                        params.setName(nickname);
+                        params.addUserId(username);
+                        params.setDistinct(true);
+
+                        GroupChannel.createChannel(params, new GroupChannel.GroupChannelCreateHandler() {
+                            @Override
+                            public void onResult(GroupChannel groupChannel, SendBirdException e) {
+                                if (e != null) {
+                                    Log.d("XXXX", e.getMessage());
+                                }
+
+                                // Open the created chat channel
+                                Intent intent = ChannelActivity.newIntent(getApplicationContext(), groupChannel.getUrl());
+                                startActivity(intent);
+                            }
+                        });
+
+                        // 토스트로 정보 출력
+                        Toast.makeText(getApplicationContext(), "Username: " + username + "\n" + snippet, Toast.LENGTH_SHORT).show();
+
+                        // true를 반환하면 마커 클릭 이벤트가 소비되었음을 나타냅니다.
+                        // false를 반환하면 이후 기본 동작도 함께 수행됩니다.
+                        return true;
+                    }
+                });
+
+
+
+                // 2. 불러온 유저 목록을 맵 위에 렌더링 한다.
+                // 3. 렌더링 한 컴포넌트는 클릭이 가능하다.
+                // 4. 클릭했을때는 유저 프로필을 보여준다.
+                // 5. 3초마다 인접 모든 사용자의 jsonarray 달라진 lat, lon 갱신
+            }
+        });
 
     }
 
