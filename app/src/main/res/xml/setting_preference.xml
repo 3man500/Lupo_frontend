@@ -10,9 +10,7 @@
         <SwitchPreference
             android:key="sound"
             android:title="소리"/>
-        <PreferenceScreen
-            android:key="profile"
-            android:title="나의 프로필"/>
+
         <PreferenceScreen
             android:key="friend"
             android:title="친구 확인"/>

@@ -126,7 +126,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         btn_open_profile.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // MainActivity에서 ProfileActivity로 연결해주는 intent
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
                 Log.v("테스트", "1");
                 // ProfileActivity를 실행하라
                 startActivity(intent);
@@ -202,6 +202,42 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
+<<<<<<< Updated upstream
+=======
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                    mMap = googleMap;
+                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                        return;
+                    }
+                    LatLng curpoint = new LatLng(cur_lat, cul_lon);
+
+                    //    마커로 위치 표시
+//                    showMyLocationMarker(curpoint);
+                    // 현재위치로 카메라 이동 및 확대
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curpoint, 13));
+                    mMap.setMyLocationEnabled(true);
+                    circle1KM = new CircleOptions()
+                            .center(curpoint)
+                            .radius(3000)       // 반지름 단위 : m
+                            .strokeWidth(1.0f)
+                            .fillColor(Color.parseColor("#880000ff"));
+                    circle= mMap.addCircle(circle1KM);
+                    circle.setCenter(curpoint);
+
+
+
+
+                }
+            });
+>>>>>>> Stashed changes
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -245,6 +281,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
     // on create 문 끝
+
+
+    //maker click event
 
     //    위치 권한 설정
     @Override
