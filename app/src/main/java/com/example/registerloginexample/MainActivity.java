@@ -202,9 +202,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-<<<<<<< Updated upstream
-=======
-
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
@@ -237,7 +234,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
->>>>>>> Stashed changes
+
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
