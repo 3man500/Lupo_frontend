@@ -4,14 +4,9 @@
     >
     <!-- 인터넷 권한 선언 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--    GPS 권한 선언-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-<!--    GPS 권한 선언-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<!--    자세한 위치 선언-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <!--    네트워크 환경 권한-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -22,8 +17,10 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <!--    카메라 접근 권한-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <!--    백그라운드 위치-->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION">
+
 
 
 
