@@ -7,6 +7,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -355,9 +357,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .radius(5000)       // 반지름 단위 : m
                         .strokeWidth(1.0f)
                         .fillColor(Color.parseColor("#880000ff"));
+
+
                 circle = mMap.addCircle(circle1KM);
                 circle.setCenter(curpoint);
                 circle.setClickable(true);
+
+                private void animateCircleColorChange(circle, int newColor) {
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofObject(circle, "fillColor", new ArgbEvaluator(), circle.getFillColor(), newColor);
+                    objectAnimator.setDuration(2000); // 애니메이션 지속 시간 (ms)
+                    objectAnimator.start();
+                }
+
+                animateCircleColorChange(circle, Color.parseColor("#88aa00ff"));
 
                 GoogleMap.OnCircleClickListener circleClickListener = new GoogleMap.OnCircleClickListener() {
                     @Override
