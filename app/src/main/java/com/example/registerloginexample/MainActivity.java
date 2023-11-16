@@ -204,39 +204,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mMap);
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-
-                    mMap = googleMap;
-                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                        return;
-                    }
-                    LatLng curpoint = new LatLng(cur_lat, cul_lon);
-
-                    //    마커로 위치 표시
-//                    showMyLocationMarker(curpoint);
-                    // 현재위치로 카메라 이동 및 확대
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curpoint, 13));
-                    mMap.setMyLocationEnabled(true);
-                    circle1KM = new CircleOptions()
-                            .center(curpoint)
-                            .radius(3000)       // 반지름 단위 : m
-                            .strokeWidth(1.0f)
-                            .fillColor(Color.parseColor("#880000ff"));
-                    circle= mMap.addCircle(circle1KM);
-                    circle.setCenter(curpoint);
-
-
-
-
-                }
-            });
-
 //    현재 위치 받아오기
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -399,13 +366,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 circle.setCenter(curpoint);
                 circle.setClickable(true);
 
-                private void animateCircleColorChange(circle, int newColor) {
-                    ObjectAnimator objectAnimator = ObjectAnimator.ofObject(circle, "fillColor", new ArgbEvaluator(), circle.getFillColor(), newColor);
-                    objectAnimator.setDuration(2000); // 애니메이션 지속 시간 (ms)
-                    objectAnimator.start();
-                }
-
-                animateCircleColorChange(circle, Color.parseColor("#88aa00ff"));
+//                private void animateCircleColorChange(circle, int newColor) {
+//                    ObjectAnimator objectAnimator = ObjectAnimator.ofObject(circle, "fillColor", new ArgbEvaluator(), circle.getFillColor(), newColor);
+//                    objectAnimator.setDuration(2000); // 애니메이션 지속 시간 (ms)
+//                    objectAnimator.start();
+//                }
+//
+//                animateCircleColorChange(circle, Color.parseColor("#88aa00ff"));
 
                 GoogleMap.OnCircleClickListener circleClickListener = new GoogleMap.OnCircleClickListener() {
                     @Override
