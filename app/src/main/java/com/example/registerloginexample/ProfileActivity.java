@@ -103,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
         data.setType("image/*");
 
 //        Uri picUri = data.getData();
-        //filePath = getPath(picUri);
+//        filePath = getPath(picUri);
 //        Log.i("image path", picUri.toString());
 //        if (filePath != null) {
 //            try {
@@ -130,10 +130,33 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
+//        switch (requestCode) {
+//            case 2000:
+//                Uri selectedImageUri = data.getData();
+//                if (selectedImageUri != null) {
+//                    ivProfile.setImageURI(selectedImageUri);
+//                } else {
+//                    Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//            default:
+//                Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
+//        }
+
         switch (requestCode) {
             case 2000:
                 Uri selectedImageUri = data.getData();
                 if (selectedImageUri != null) {
+                    // 이미지 경로를 얻는 부분 추가
+                    String imagePath = getPath(selectedImageUri);
+                    if (imagePath != null) {
+                        Log.i("Image Path", imagePath);
+                        // 여기에서 imagePath를 사용하거나 필요한 곳에 전달할 수 있습니다.
+                    } else {
+                        Toast.makeText(this, "사진의 경로를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // 이미지를 ImageView에 표시
                     ivProfile.setImageURI(selectedImageUri);
                 } else {
                     Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
@@ -142,6 +165,23 @@ public class ProfileActivity extends AppCompatActivity {
             default:
                 Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Uri에서 실제 파일 경로를 얻는 메서드
+    private String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String filePath = cursor.getString(column_index);
+            cursor.close();
+            Log.i("filePath", filePath);
+            return filePath;
+        }
+
+        return null;
     }
 
     private void showPermissionContextPopup() {
@@ -163,22 +203,22 @@ public class ProfileActivity extends AppCompatActivity {
         return byteArrayOutputStream.toByteArray();
     }
 
-        public String getPath(Uri uri) {
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-            cursor.moveToFirst();
-            String document_id = cursor.getString(0);
-            document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-            cursor.close();
-
-            cursor = getContentResolver().query(
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-            cursor.moveToFirst();
-            @SuppressLint("Range") String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            cursor.close();
-
-            return path;
-        }
+//        public String getPath(Uri uri) {
+//            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+//            cursor.moveToFirst();
+//            String document_id = cursor.getString(0);
+//            document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+//            cursor.close();
+//
+//            cursor = getContentResolver().query(
+//                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                    null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+//            cursor.moveToFirst();
+//            @SuppressLint("Range") String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+//            cursor.close();
+//
+//            return path;
+//        }
 
     private void uploadBitmap(final Bitmap bitmap) {
 
